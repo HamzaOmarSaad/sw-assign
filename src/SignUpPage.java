@@ -2,11 +2,24 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+/**
+ * Represents the Sign Up window for new users.
+ * Allows users to create a new account by entering a username and matching passwords.
+ */
 public class SignUpPage extends JFrame {
+    /** Field for entering the new username. */
     private JTextField usernameField;
+
+    /** Field for entering the new password. */
     private JPasswordField passwordField;
+
+    /** Field for confirming the password. */
     private JPasswordField confirmField;
 
+    /**
+     * Constructs the SignUpPage window.
+     * Initializes the UI components and sets up the layout and event handling.
+     */
     public SignUpPage() {
         setTitle("Sign Up");
         setSize(350, 300);
@@ -28,7 +41,10 @@ public class SignUpPage extends JFrame {
         customizeButton(registerButton);
         customizeButton(backButton);
 
+        // Event handler for registration
         registerButton.addActionListener(e -> handleRegister());
+
+        // Event handler to return to login
         backButton.addActionListener(e -> {
             dispose();
             new LoginPage();
@@ -73,6 +89,11 @@ public class SignUpPage extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Styles a button with consistent colors and fonts.
+     *
+     * @param button The JButton to be styled
+     */
     private void customizeButton(JButton button) {
         button.setBackground(new Color(0, 120, 215));
         button.setForeground(Color.WHITE);
@@ -81,6 +102,11 @@ public class SignUpPage extends JFrame {
         button.setBorder(new LineBorder(new Color(0, 120, 215), 2, true));
     }
 
+    /**
+     * Handles the user registration logic.
+     * Validates input, checks password confirmation, and registers the user if possible.
+     * Displays appropriate messages based on the outcome.
+     */
     private void handleRegister() {
         String user = usernameField.getText();
         String pass = new String(passwordField.getPassword());

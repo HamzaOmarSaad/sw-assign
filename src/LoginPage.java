@@ -2,10 +2,22 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+/**
+ * Represents the login window for the application.
+ * It allows users to enter a username and password to log in,
+ * or navigate to the sign-up page.
+ */
 public class LoginPage extends JFrame {
+    /** Text field for entering the username. */
     private JTextField usernameField;
+
+    /** Password field for entering the password. */
     private JPasswordField passwordField;
 
+    /**
+     * Constructs a new LoginPage window.
+     * Sets up the UI components, layout, and event handlers.
+     */
     public LoginPage() {
         setTitle("Login");
         setSize(350, 250);
@@ -24,7 +36,10 @@ public class LoginPage extends JFrame {
         customizeButton(loginButton);
         customizeButton(signUpButton);
 
+        // Handle login button click
         loginButton.addActionListener(e -> handleLogin());
+
+        // Navigate to the sign-up page
         signUpButton.addActionListener(e -> {
             dispose();
             new SignUpPage();
@@ -62,6 +77,11 @@ public class LoginPage extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Applies a consistent style to buttons.
+     *
+     * @param button The JButton to style
+     */
     private void customizeButton(JButton button) {
         button.setBackground(new Color(0, 120, 215));
         button.setForeground(Color.WHITE);
@@ -70,6 +90,10 @@ public class LoginPage extends JFrame {
         button.setBorder(new LineBorder(new Color(0, 120, 215), 2, true));
     }
 
+    /**
+     * Handles login validation by checking user credentials.
+     * If valid, it opens the dashboard. If invalid, it shows an error dialog.
+     */
     private void handleLogin() {
         String user = usernameField.getText();
         String pass = new String(passwordField.getPassword());
