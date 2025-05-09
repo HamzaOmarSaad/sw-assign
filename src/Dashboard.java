@@ -1,11 +1,22 @@
-
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+/**
+ * The Dashboard class represents the main menu of the application
+ * after a successful login. It allows users to navigate to different
+ * functionalities such as adding/removing assets, zakat calculator,
+ * bank account, and logout.
+ */
 public class Dashboard extends JFrame {
+    /** The logged-in user's username. */
     private String username;
 
+    /**
+     * Constructs the Dashboard GUI for the specified user.
+     *
+     * @param username The username of the logged-in user
+     */
     public Dashboard(String username) {
         this.username = username;
 
@@ -30,26 +41,31 @@ public class Dashboard extends JFrame {
         customizeButton(func4Button);
         customizeButton(logoutButton);
 
+        // Add Asset
         func1Button.addActionListener(e -> {
             dispose();
             new Asset_Add(username);
         });
 
+        // Remove/Edit Asset
         func2Button.addActionListener(e -> {
             dispose();
             new Asset_Edit(username);
         });
 
+        // Zakat Calculator
         func3Button.addActionListener(e -> {
             dispose();
             new Zakat(username);
         });
 
+        // Bank Account
         func4Button.addActionListener(e -> {
             dispose();
             new Bank(username);
         });
 
+        // Logout
         logoutButton.addActionListener(e -> {
             dispose();
             new LoginPage();
@@ -74,6 +90,11 @@ public class Dashboard extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Applies consistent styling to all buttons used in the dashboard.
+     *
+     * @param button The JButton to style
+     */
     private void customizeButton(JButton button) {
         button.setMaximumSize(new Dimension(200, 40));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
