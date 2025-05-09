@@ -3,15 +3,30 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * This class represents a GUI for editing and removing assets from a user's asset list.
+ * It allows users to update and delete existing assets.
+ */
 public class Asset_Edit extends JFrame {
     private String username;
 
-    // Updated Asset class with ID support
+    /**
+     * This class represents an asset with an ID, type, name, value, and purchase date.
+     */
     static class Asset {
         int id;
         String type, name, purchaseDate;
         double value;
 
+        /**
+         * Constructs an Asset with the given attributes.
+         *
+         * @param id the unique identifier of the asset.
+         * @param type the type of the asset (e.g., "Stocks").
+         * @param name the name of the asset.
+         * @param value the value of the asset.
+         * @param purchaseDate the purchase date of the asset.
+         */
         public Asset(int id, String type, String name, double value, String purchaseDate) {
             this.id = id;
             this.type = type;
@@ -20,6 +35,12 @@ public class Asset_Edit extends JFrame {
             this.purchaseDate = purchaseDate;
         }
 
+        /**
+         * Converts a CSV string into an Asset object.
+         *
+         * @param line the CSV string containing asset details.
+         * @return the Asset object created from the string, or null if invalid.
+         */
         public static Asset fromFileString(String line) {
             String[] parts = line.split(",", 5);
             if (parts.length == 5) {
@@ -33,30 +54,58 @@ public class Asset_Edit extends JFrame {
             return null;
         }
 
+        /**
+         * Converts the Asset object to a CSV string representation.
+         *
+         * @return the CSV string representation of the asset.
+         */
         public String toFileString() {
             return id + "," + type + "," + name + "," + value + "," + purchaseDate;
         }
 
+        /**
+         * Returns a string representation of the asset for displaying in the UI.
+         *
+         * @return a string representation of the asset.
+         */
         @Override
         public String toString() {
             return "#" + id + " - " + type + ": " + name + " | $" + value + " | " + purchaseDate;
         }
     }
 
-    // AssetStore using user-specific file
+    /**
+     * This class handles the storage and management of assets, saving and loading them from a file.
+     */
     static class AssetStore {
         private ArrayList<Asset> assets = new ArrayList<>();
         private final String fileName;
 
+        /**
+         * Constructs an AssetStore with a file specific to the user's assets.
+         *
+         * @param username the username of the current user.
+         */
         public AssetStore(String username) {
             this.fileName = "assets_" + username + ".txt";
             loadFromFile();
         }
 
+        /**
+         * Returns the list of assets.
+         *
+         * @return the list of assets.
+         */
         public ArrayList<Asset> getAssets() {
             return assets;
         }
 
+        /**
+         * Updates the asset at the specified index.
+         *
+         * @param index the index of the asset to update.
+         * @param newAsset the updated asset.
+         */
         public void updateAsset(int index, Asset newAsset) {
             if (index >= 0 && index < assets.size()) {
                 assets.set(index, newAsset);
@@ -64,6 +113,11 @@ public class Asset_Edit extends JFrame {
             }
         }
 
+        /**
+         * Removes the asset at the specified index.
+         *
+         * @param index the index of the asset to remove.
+         */
         public void removeAsset(int index) {
             if (index >= 0 && index < assets.size()) {
                 assets.remove(index);
@@ -71,6 +125,9 @@ public class Asset_Edit extends JFrame {
             }
         }
 
+        /**
+         * Saves all assets to the file.
+         */
         private void saveAllToFile() {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
                 for (Asset asset : assets) {
@@ -82,6 +139,9 @@ public class Asset_Edit extends JFrame {
             }
         }
 
+        /**
+         * Loads assets from the file into memory.
+         */
         private void loadFromFile() {
             File file = new File(fileName);
             if (!file.exists()) return;
@@ -100,6 +160,11 @@ public class Asset_Edit extends JFrame {
         }
     }
 
+    /**
+     * Constructs the Asset_Edit GUI and sets up event listeners for interacting with the assets.
+     *
+     * @param username the username of the current user.
+     */
     public Asset_Edit(String username) {
         this.username = username;
         setTitle("Edit / Remove Assets - User: " + username);
