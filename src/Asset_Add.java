@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Represents an asset with basic properties like type, name, value, and purchase date.
  */
 class Asset {
-    static int idCounter = 1000; // For generating unique IDs
+    static int idCounter = 1; // For generating unique IDs
     int id;
     String type;
     String name;

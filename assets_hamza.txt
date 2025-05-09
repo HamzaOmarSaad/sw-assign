@@ -1,0 +1,2 @@
+1000,Stocks,a7a a7a a7a,1000.0,12-11-2025
+1001,Stocks,fsvsv,1223232.0,YYYY-MM-DD
