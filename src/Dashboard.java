@@ -1,6 +1,4 @@
-/*
- * Dashboard.java
- */
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -11,7 +9,7 @@ public class Dashboard extends JFrame {
     public Dashboard(String username) {
         this.username = username;
 
-        setTitle("Dashboard - Welcome " + username);
+        setTitle("Dashboard ");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
