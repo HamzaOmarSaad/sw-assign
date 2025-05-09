@@ -1,13 +1,19 @@
 import javax.swing.*;
-import java.awt.*;
 import javax.swing.border.*;
+import java.awt.*;
+import java.util.ArrayList;
 
 public class Zakat extends JFrame {
     private String username;
+    private JComboBox<Asset_Edit.Asset> assetComboBox;
+    private JTextArea resultArea;
 
     public Zakat(String username) {
         this.username = username;
+        initializeUI();
+    }
 
+    private void initializeUI() {
         setTitle("Zakat Calculator - " + username);
         setSize(500, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -21,28 +27,25 @@ public class Zakat extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
-        formPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
-        formPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        Asset_Edit.AssetStore assetStore = new Asset_Edit.AssetStore(username);
+        ArrayList<Asset_Edit.Asset> assets = assetStore.getAssets();
 
-        JPanel idPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        JLabel idLabel = new JLabel("Investment ID:");
-        idLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        JTextField idField = new JTextField(15);
-        idField.setMaximumSize(new Dimension(200, 30));
-        idPanel.add(idLabel);
-        idPanel.add(idField);
+        JPanel assetSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        JLabel assetLabel = new JLabel("Select Asset:");
+        assetLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        JPanel amountPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        JLabel amountLabel = new JLabel("Amount ($):");
-        amountLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        JTextField amountField = new JTextField(15);
-        amountField.setMaximumSize(new Dimension(200, 30));
-        amountPanel.add(amountLabel);
-        amountPanel.add(amountField);
+        assetComboBox = new JComboBox<>();
+        for (Asset_Edit.Asset asset : assets) {
+            assetComboBox.addItem(asset);
+        }
+        assetComboBox.setPreferredSize(new Dimension(300, 30));
+        assetComboBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        assetComboBox.setRenderer(new AssetListRenderer());
 
-        JTextArea resultArea = new JTextArea(6, 25);
+        assetSelectionPanel.add(assetLabel);
+        assetSelectionPanel.add(assetComboBox);
+
+        resultArea = new JTextArea(6, 25);
         resultArea.setEditable(false);
         resultArea.setLineWrap(true);
         resultArea.setWrapStyleWord(true);
@@ -54,61 +57,84 @@ public class Zakat extends JFrame {
         JScrollPane scrollPane = new JScrollPane(resultArea);
         scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+
         JButton calculateButton = new JButton("Calculate Zakat");
         customizeButton(calculateButton);
-        calculateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        calculateButton.addActionListener(e -> {
-            try {
-                int invID = Integer.parseInt(idField.getText());
-                double amount = Double.parseDouble(amountField.getText());
-                double zakat = amount * 0.025;
-
-                resultArea.setText(String.format(
-                        "Zakat Calculation Results:\n\n" +
-                                "Investment ID: %d\n" +
-                                "Amount: $%,.2f\n" +
-                                "Zakat (2.5%%): $%,.2f\n\n" +
-                                "Zakat is an obligatory charity in Islam that is " +
-                                "required from Muslims who meet the necessary criteria of wealth.",
-                        invID, amount, zakat
-                ));
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this,
-                        "Please enter valid numbers for all fields",
-                        "Input Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        calculateButton.addActionListener(e -> calculateZakat());
 
         JButton backButton = new JButton("Back to Dashboard");
         customizeButton(backButton);
-        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton.addActionListener(e -> {
             dispose();
             new Dashboard(username);
         });
 
-        formPanel.add(idPanel);
-        formPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        formPanel.add(amountPanel);
-        formPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        formPanel.add(scrollPane);
-        formPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        formPanel.add(calculateButton);
+        buttonPanel.add(calculateButton);
+        buttonPanel.add(backButton);
 
         mainPanel.add(titleLabel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        mainPanel.add(formPanel);
+        mainPanel.add(assetSelectionPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        mainPanel.add(backButton);
+        mainPanel.add(scrollPane);
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainPanel.add(buttonPanel);
 
         add(mainPanel);
         setVisible(true);
     }
 
+    private void calculateZakat() {
+        Asset_Edit.Asset selectedAsset = (Asset_Edit.Asset) assetComboBox.getSelectedItem();
+
+        if (selectedAsset == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select an asset first",
+                    "Selection Required",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        double zakat = selectedAsset.value * 0.025;
+
+        resultArea.setText(String.format(
+                "Zakat Calculation Results:\n\n" +
+                        "Asset: %s\n" +
+                        "Type: %s\n" +
+                        "Value: $%,.2f\n" +
+                        "Purchase Date: %s\n\n" +
+                        "Zakat Due (2.5%%): $%,.2f\n\n" +
+                        "Zakat is an obligatory charity in Islam that is " +
+                        "required from Muslims who meet the necessary criteria of wealth.",
+                selectedAsset.name,
+                selectedAsset.type,
+                selectedAsset.value,
+                selectedAsset.purchaseDate,
+                zakat
+        ));
+    }
+
+    private class AssetListRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(
+                JList<?> list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            if (value instanceof Asset_Edit.Asset) {
+                Asset_Edit.Asset asset = (Asset_Edit.Asset) value;
+                setText(String.format("%s (%s) - $%,.2f", asset.name, asset.type, asset.value));
+            }
+
+            return this;
+        }
+    }
+
     private void customizeButton(JButton button) {
-        button.setMaximumSize(new Dimension(200, 40));
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setPreferredSize(new Dimension(180, 40));
         button.setBackground(new Color(0, 120, 215));
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
@@ -116,7 +142,4 @@ public class Zakat extends JFrame {
         button.setBorder(new LineBorder(new Color(0, 120, 215), 2, true));
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Zakat("testUser"));
-    }
 }
