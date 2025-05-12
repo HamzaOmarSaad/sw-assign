@@ -143,6 +143,8 @@ class AssetStore {
      * Loads assets from the user file.
      */
     private void loadFromFile() {
+        assets.clear();
+        Asset.idCounter = 1;
         File file = new File(fileName);
         if (!file.exists()) return;
 
@@ -158,6 +160,7 @@ class AssetStore {
             e.printStackTrace();
         }
     }
+
 }
 
 /**
